@@ -1,0 +1,37 @@
+This module specifies base practises needed for use of OpenPGP in any application.
+
+== Numbers ==
+
+Numbers are always unsigned and encoded in network byte-order (that is, big-endian).
+
+== Multiprecision Integers ==
+
+MPIs are use to hold large, variable-sized, unsigned integers.
+
+They consist of a 2-octet number representing their length in bits, followed by the network byte-order octets of the integer.
+
+The number of octets in the body is ((length field + 7) / 8) + 2.
+
+The length field describes the length starting from the most significant non-zero bit.
+
+== Text ==
+
+Text is always encoded using UTF-8.
+
+== Times ==
+
+Times are encoded using a 4-octet number representing the number of seconds since 1970-01-01T00:00:00Z.
+
+== Packets ==
+
+OpenPGP messages are comprised of a series of packets.  Various modules will specify specific packets.  Every packet has a header in the same format.
+
+The first octet contains the packet "tag", which specifies the format of the packet.  The first and second bit of this octet must always be set (tag | 0xC0).  The rest of the bits specify the the "tag" (first-octet & 0x3F).
+
+The second octet is always 0xFF, followed by a four-octet number encoding the length of the packet in bytes.  This limits packet length to just over 4 TB.  If this limitation proves to be a problem in practise, this specification may be extended to allow packet lengths to be specified in another way.
+
+Unsupported tag values MUST NOT cause an error in parsing, but such packets MAY be discarded as unsupported.
+
+Tag values 60, 61, 62, and 63 are reserved for specifying private or experimental packets.
+
+Tag value 12 is reserved for specifying key trust information, but the format of this information is implementation-specific.

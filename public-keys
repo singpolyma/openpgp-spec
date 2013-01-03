@@ -1,0 +1,29 @@
+Depends: base, algorithms
+Recommends: key-signatures
+
+This module specifies how to encode public keys (certificates) for use with OpenPGP.
+
+A primary public key is represented by a packet with tag value 0x06.  A "subkey" is represented by an identically formatted packet with tag value 0x0E place after a primary public key packet in an OpenPGP message.
+
+The packet is formatted thusly:
+
+The first octet represents packet version number an is 0x04.
+The next four octets encode the time whe the key was first created.
+The next octet encodes the asymmetric cryptographic algorithm to be used with this key.
+
+For RSA keys, this is followed by two MPIs.  The first MPI is RSA public modulus n, and the second MPI is RSA encryption exponent e.
+
+== Public-Key Message Format ==
+
+When transmitting a public key (with optional subkeys and certification signatures), the following message format is used:
+
+First, the primary public key packet itself.
+Then, any revocation signatures (to indicate that this key is revoked).
+Then, any UserIDs or User Attributes.  Each UserID is immidiately followed by any certification signatures for that UserID (thus resulting in interleaved UserID and signature packets).
+Then, any subkeys.  Each subkey is followed by a so-called "self-signature" from the primary key.  Each subkey may be followed by a revocation signature if it has been revoked.
+
+Messages of this format may be concatenated to allow for transferring multiple public keys at once.
+
+== Purpose of subkeys ==
+
+Subkeys are generally used for encryption in conjunction with signing by the primary key, but they may also be used for signing.  One reason to use this functionality is that the secret-key components of any given key need not be present on any given machine.  If a machine is compromised, only the subkeys stored on that machine need to be revoked, and other keys may be retained.  If the primary key is not compromised, new subkeys may be generated and bound by self-signature to the same primary key, allowing the same identity to continue operation even after systems are compromised.

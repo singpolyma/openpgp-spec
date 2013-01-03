@@ -32,6 +32,6 @@ The second octet is always 0xFF, followed by a four-octet number encoding the le
 
 Unsupported tag values MUST NOT cause an error in parsing, but such packets MAY be discarded as unsupported.
 
-Tag values 60, 61, 62, and 63 are reserved for specifying private or experimental packets.
+Tag values 0x3C, 0x3D, 0x3E, and 0x3F are reserved for specifying private or experimental packets.
 
-Tag value 12 is reserved for specifying key trust information, but the format of this information is implementation-specific.
+Tag value 0x0C is reserved for specifying key trust information, but the format of this information is implementation-specific.

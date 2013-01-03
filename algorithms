@@ -1,0 +1,26 @@
+This module describes constants used to represent algorithms in OpenPGP.  They are placed here because they may be referenced from many other modules.
+
+Values from 0x64 to 0x6e, inclusive, are all reserved for private or experimental use.
+
+=== Asymmetric Cryptography ==
+
+0x01 RSA
+
+=== Symmetric Cryptography ===
+
+0x00 Unencrypted
+0x07 AES128
+0x08 AES192
+0x09 AES256
+
+=== Cryptographic Hash ===
+
+0x02 SHA1
+0x08 SHA256
+0x0A SHA512
+
+=== Compression ===
+
+0x00 Uncompressed
+0x02 ZLIB (RFC1950)
+0x03 BZip2

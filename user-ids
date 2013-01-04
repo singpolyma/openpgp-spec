@@ -1,0 +1,13 @@
+Depends: base
+
+A UserID represents some identity information about the owner of a public-key being bound to said key.
+
+The tag value for a UserID packet is 0x0D.
+
+The body of the packet is freeform UTF-8 text that should be encoded using some structure.  Commonly used structures include:
+
+Owner Name (some comment) <owner-email>
+Owner Name <owner-email>
+<owner-email>
+Owner Name
+Any single, valid VCARD field

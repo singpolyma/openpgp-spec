@@ -1,0 +1,57 @@
+Depends: base, algorithms
+Recommends: fingerprints
+
+A signature packet describes a binding between a public key and some data, and has tag value 0x02.
+
+The first octet of a signature packet represents its version, and must be 0x04.
+The second octet encodes the type of signature, as described below.
+The third octet encodes the asymmetric public-key algorithm used for this signature.
+The fourth octet encodes the cryptographic hash algorithm used for this signature.
+Next, a two-octet number encoding the number of octets that make up the subpackets of this signature.
+Next, the raw subpackets of this signature, as described below.
+The next two octets must be 0x00.
+The next two octets hold the leftmost 16 bits of the signed hash value.
+
+For RSA signatures, this is followed by an MPI representing the signature value m**d mod n.
+
+== Computing Signatures ==
+
+To the octets being signed are appended all the octets of the raw signature packet body from the first octet (the version) through the end of the subpackets (inclusive).  To this is appended 0x04, 0xFF, and a four-octet number encoding the number of octets that were appended in the previous step.
+
+For RSA signatures, the hash value is encoded using PKCS#1 encoding type EMSA-PKCS1-v1_5 as described in Section 9.2 of RFC3447 at <http://tools.ietf.org/html/rfc3447#section-9.2>.
+
+== Signature Types ==
+
+Other modules may define additional signature types, but here we define the following:
+
+0x02 This signature is only of its own subpackets.  It is computed as if over zero octets, with the normal thing appended as above.
+0x40 This signature is only meaningful for the timestamp contained in it.
+0x50 Tis signature is a signature over some other signature packets.  It is analogous to a notary seal on the signed data.  Signature Target or Embedded Signature subpackets may be used to specify what signatures are referred to.
+
+== Subpackets ==
+
+There are many different kinds of signatures in OpenPGP, and they may want to encode all sorts of data.  For this purpose, a generic extension mechanism exists for embedding arbitrary data in a signature packet.
+
+The first octet of a subpacket is always 0xFF.
+The next four octets encode a number representing the length of the remaining data in this subpacket.
+The next octet encodes the type of the subpacket.  If bit 7 is set (type & 0x80), it denotes that it is critical that the implementation recognize this subpacket.  If a subpacket is encountered that has this bit set, but is not recognised, it MUST consider the signature to be in error.  The value of the type of the subpacket is thus (type & 0x7F), since the 7th bit is used for this other purpose.  Values from 0x64 to 0x6E (inclusive) are reserved for private or experimental subpackets.
+
+=== Specific Subpackets ===
+
+0x02 Signature Creation Time, body is a time value.
+0x03 Signature Expiration Time, body is a 4-octet number representing seconds after the Signature Creation Time.  If this subpacket is not present or the value is zero, the signature never expires.
+0x07 Signature Revocability Status, body is one octet: 0x00 for not revocable or 0x01 for revocable.  Revocation signatures on an unrevocable signature are ignored.
+0x10 Signature Issuer, body is an 8-octets from the end of the fingerprint of the key that made this signature (the "key id")
+0x14 Signature Notation Data, body is:
+	First octet is 0x80 if the value of the note is human-readable, or 0x00 otherwise.
+	The next three octets are 0x00.
+	Next, a two-octet number encoding the length of the notation name.
+	Next, a two-octet number encoding the length of the notation value.
+	Next, the notation name, as a UTF-8 encoding string.  User-defined notations must have names that end with "@somedomain.tld", a DNS name that the user defining the notation controls.  There must be no '@' character in the part of the name that comes before this '@' character.
+	Next, the notation value, which is some string of octets specific to the notation being made.
+0x1A Signature Policy URI, body is a UTF-8 encoded URI of a document that describes the policy under which this signature was made.
+0x1F Signature Target, body is:
+	First octet encodes the asymmetric public-key algorithm of the target signature.
+	Second octet encodes the cryptographic hash algorithm of the target signature.
+	The rest of the packet is a hash, using the given cryptographic hash function, of the target signature packet.
+0x20 Embedded Signature, body is a complete signature packet as specified above.

@@ -1,0 +1,1 @@
+OpenPGP defines a two-octet checksum that is constructed by taking the sum of the values of all the octets being checksummed, modulo 65536.

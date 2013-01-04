@@ -1,0 +1,64 @@
+Depends: public-keys, signatures
+Recommends: algorithms, user-ids, fingerprints, regular-expressions
+
+This module defines the following additional signature type values:
+
+0x11 The issuer of this certification has not verified that the owner of the key is the user id specified.
+0x12 The issuer of this certification has casually verified that the owner of the key is the user id specified.
+0x13 The issuer of this certification has substantially verified that the owner of the key is the user id specified.
+0x18 This signature must be made by a primary key and indicates that it owns a subkey.  It MUST contain an embedded signature packet of type 0x19, if the subkey is marked as able to make signatures.
+0x19 This signature must be made by a subkey and indicates that it is owned by a primary key.
+0x1F This signature is directly on a key and binds the contents of its own subpackets to the key.
+0x20 This signature indicates that the key being signed is revoked and should be considered compromised.
+0x28 This signature indicates that the subkey being signed is revoked and should be considered compromised.  The signature should be made by the primary key that is bound to the subkey.
+0x30 This signature indicates that all previous signatures over the same material should be considered invalid.
+
+== Octets Being Signed ==
+
+For 0x11, 0x12, 0x13:
+
+The raw fingerprint material for the public-key, followed by the octet 0xB4, followed by a four-octet number encoding the length of the UserID data, followed by the raw body of the UserID.
+
+For 0x18, 0x19:
+
+The raw fingerprint material for the primay public-key, followed by the raw fingerprint material for the subkey.
+
+For 0x1F, 0x20, 0x28:
+
+The raw fingerprint material for the public-key being signed or revoked.
+
+For 0x30:
+
+The octets that were signed over by the signature being revoked.
+
+== Signature Subpackets ==
+
+This module defines the following additional signature subpacket types:
+
+0x04 A single octet, 0x00 if this signature should not be exported or transmitted to others, 0x01 (or just do not include this packet) if this signature may be exported or transmitted to others.
+0x05 This subpacket SHOULD be present in signature types 0x11, 0x12, and 0x13.
+	The first octet encodes a number representing the depth to which the issuer trusts signatures by this key and UserID, with 0 meaning "I certify that this key belongs to this UserID, but do not necessarily trust signatures made by this key", 1 meaning that the issuer additionally trusts signatures made by this key, etc.  In general a depth n trust signature asserts that a key is to issue depth n-1 trust signatures.
+	The second octet encodes a number indicating how much trust the issuer places in signatures made by this key, with a value of 60 indicating "partial trust" and a value of 120 indicating "complete trust".
+0x06 This subpacket contains a null-terminated regular expression which limits the scope of subpacket 0x05.  Only signatures on UserIDs matching this regular expression with have the trust extended to them.
+0x09 This subpacket SHOULD be present in a signature of type 0x1F or 0x13 made by a key on itself, and contains a 4-octet time value indicating the number of seconds after a key's creation time during which it is valid.  If the value is zero, the key never expires.
+0x0B This subpacket MAY be present in a signature of type 0x1F or 0x13 made by a key on itself, and contains an ordered encoding of 1-octet symmetric cryptographic algorithm constants, in decreasing order of preference.
+0x15 This subpacket MAY be present in a signature of type 0x1F or 0x13 made by a key on itself, and contains an ordered encoding of 1-octet cryptographic hash algorithm constants, in decreasing order of preference.
+0x16 This subpacket MAY be present in a signature of type 0x1F or 0x13 made by a key on itself, and contains an ordered encoding of 1-octet compression algorithm constants, in decreasing order of preference.
+0x18 This subpacket MAY be present in a signature of type 0x1F or 0x13 made by a key on itself, and contains a UTF-8 encoded URI of the keyserver preferred for this key (or this UserID on this key).  Since it is a URI, the keyserver may just be a copy of the key to be retrieved over HTTP, FTP, etc.
+0x19 This subpacket MAY be present in a signature of type 0x13 made by a key on one of its UserIDs.  The body is a single octet, 0x01 if the signed UserID is the primary UserID, or 0x00 (or just do not include this packet) otherwise.
+0x1B This subpacket MAY be present in any signature of type 0x1F, 0x11, 0x12, or 0x13.  This packet contains some octets of flags.  Flags currently defined include:
+	(first-octet & 0x01) indicates that this key may be used to certify other keys.
+	(first-octet & 0x02) indicates that this key may be used to sign data.
+	(first-octet & 0x04) indicates that this key may be used to encrypt communication.
+	(first-octet & 0x08) indicates that this key may be used to encrypt storage.
+	(first-octet & 0x10) indicates that the secret components of this key may have been split using a secret-sharing mechanism.
+	(first-octet & 0x20) indicates that this key may be used for authentication.
+	(first-octet & 0x80) indicates that the secret components of this key may be in the possession of more than one person.
+0x1D This subpacket SHOULD be present in any signature of type 0x20, 0x28, or 0x30.  The first octet indicates a machine-readable reason for the revocation, and the rest of the packet is a UTF-8 string describing to a human the reason for the revocation.  Machine-readable reason octets include:
+	0x00 No reason given
+	0x01 Key is superseded
+	0x02 Key has been compromised
+	0x03 Key has been retired
+	0x20 UserID information is no longer valid
+	0x64 through 0x6E, inclusive, are reserved for private or experimental use
+0x1E An implementation supporting encryption SHOULD place this subpacket on a signature of type 0x1F or 0x13 made by a key on itself, with the single octet 0x01 as the body.

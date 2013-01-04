@@ -26,7 +26,8 @@ Other modules may define additional signature types, but here we define the foll
 
 0x02 This signature is only of its own subpackets.  It is computed as if over zero octets, with the normal thing appended as above.
 0x40 This signature is only meaningful for the timestamp contained in it.
-0x50 Tis signature is a signature over some other signature packets.  It is analogous to a notary seal on the signed data.  Signature Target or Embedded Signature subpackets may be used to specify what signatures are referred to.
+0x50 This signature is a signature over some other signature packets.  It is analogous to a notary seal on the signed data.  Signature Target subpackets may be used to specify what signatures are referred to.
+	For a signature over another signature packet, the octets being signed over are the octet 0x88, followed by a four-octet number encoding the number of octets to follow, followed by the raw body of the signature packet being signed over.
 
 == Subpackets ==
 

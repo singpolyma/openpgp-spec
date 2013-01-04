@@ -1,5 +1,5 @@
 Depends: base, algorithms
-Recommends: key-signatures
+Recommends: key-signatures, user-ids
 
 This module specifies how to encode public keys (certificates) for use with OpenPGP.
 
@@ -18,9 +18,9 @@ For RSA keys, this is followed by two MPIs.  The first MPI is RSA public modulus
 When transmitting a public key (with optional subkeys and certification signatures), the following message format is used:
 
 First, the primary public key packet itself.
-Then, any revocation signatures (to indicate that this key is revoked).
-Then, any UserIDs or User Attributes.  Each UserID is immidiately followed by any certification signatures for that UserID (thus resulting in interleaved UserID and signature packets).
-Then, any subkeys.  Each subkey is followed by a so-called "self-signature" from the primary key.  Each subkey may be followed by a revocation signature if it has been revoked.
+Then, any revocation signatures or signatures directly on the key.
+Then, any UserIDs or User Attributes.  Each packet is immidiately followed by any certification or revocation signatures for that packet (thus resulting in interleaved UserID/User Attribute and signature packets).
+Then, any subkeys.  Each subkey is followed by a binding from the primary key.  Each subkey may be followed by a revocation signature if it has been revoked.
 
 Messages of this format may be concatenated to allow for transferring multiple public keys at once.
 

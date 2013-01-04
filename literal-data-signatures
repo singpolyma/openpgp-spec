@@ -1,0 +1,16 @@
+Depends: literal-data, signatures
+
+This module defines two additional signature type values:
+
+0x00 Binary data, the signer certifies that the signed binary data has not been modified.
+0x01 Text data, the signer certifies that the signed text data has not been modified, except to normalize line-endings.  The signature is made over the text with line-endings normalised to <CR><LF>.
+
+== Message Format ==
+
+An OpenPGP message comprised of only two packets, first a signature packet, then a literal data packet, represents a signature by the given signature over the octets of the literal data stored in the literal data packet.  The other metadata in the literal data packet is not signed.
+
+Some implementations may allow multiple signature packets to precede the literal data packet, in order to represent multiple signatures of the same data.
+
+== Detached Signatures ==
+
+One or more signature packets may be stored or transmitted in a file by themselves, with the data that was signed over stored or transmitted seperately in an implementation-specific way.

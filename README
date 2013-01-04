@@ -4,6 +4,6 @@ OpenPGP is a data encoding and set of practises for interoperability of cryptogr
 
 This set of documents is an attempt to produce both a simplified OpenPGP specification, trimming deprecated and outright insecure practices, as well as a modular specification, so that application authors can easily implement just the features that they need.
 
-This specification will always remain 100% compatible with IETF-published OpenPGP specifications, but does not seek to cover all of the possible features.  That is, data produced according to this specification will always be useable by full implementations of OpenPGP, but data produced my full implementations may not be useable with implementations of this specification.
+This specification will always remain 100% compatible with IETF-published OpenPGP specifications, but does not seek to cover all of the possible features.  That is, data produced according to this specification will always be useable by full implementations of OpenPGP, but data produced by full implementations may not be useable with implementations of this specification.
 
 The existance of this specification does not constitute a recommendation that you write OpenPGP-handling code yourself.  If there exists a library for your platform, you should use that and contribute to it where it is deficient.  Security is hard, and even the best experts make mistakes.

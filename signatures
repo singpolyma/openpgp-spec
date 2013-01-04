@@ -47,7 +47,7 @@ The next octet encodes the type of the subpacket.  If bit 7 is set (type & 0x80)
 	The next three octets are 0x00.
 	Next, a two-octet number encoding the length of the notation name.
 	Next, a two-octet number encoding the length of the notation value.
-	Next, the notation name, as a UTF-8 encoding string.  User-defined notations must have names that end with "@somedomain.tld", a DNS name that the user defining the notation controls.  There must be no '@' character in the part of the name that comes before this '@' character.
+	Next, the notation name, as a UTF-8 encoding string.  User-defined notations must have names that end with "@somedomain.tld", a DNS name that the user defining the notation controls.  There must be no '@' character in the name, except for this '@' character.
 	Next, the notation value, which is some string of octets specific to the notation being made.
 0x1A Signature Policy URI, body is a UTF-8 encoded URI of a document that describes the policy under which this signature was made.
 0x1F Signature Target, body is:

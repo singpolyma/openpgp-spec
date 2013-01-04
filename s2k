@@ -1,0 +1,26 @@
+Depends: algorithms
+
+A string to key (S2K) specifier encodes a mechanism for producing a key to be used with a symmetric block cipher from a string of octets.
+
+The first octet of an S2K specifier encodes its type, and should be 0x03.
+The second octet encodes the cryptographic hash function to be used.
+The next eight octets encode a salt value.
+The last octet encodes a special value representing how many octets are to be hashed.
+
+This last octet is decoded using the following formula:
+
+((Int32)16 + (value & 15)) << ((value >> 4) + 6)
+
+== The Algorithm ==
+
+To produce a key from a string of octets and an S2K specifier:
+
+Prepend the salt octets to the string of octets.
+Repeat the salted octets until the string is the exact length specified by the decoded value of the last octet of the S2K specifier.  Truncate the end of this string if necessary to produce one of the exact length, unless the input string is itself longer than require.
+Hash the repeated, salted octets using the hash function from the S2K specifier.
+If the output is smaller than the required key size, prepend an octet with value 0x00 to the repeated, salted octets and append the hash output to the previous hash output.
+If the output is larger than the required key size, take the leftmost bytes.
+
+== Passphrases ==
+
+This procedure will normally be used with passphrases input as text.  It is recommended to ensure such passphrases are encoded as UTF-8 before they are used with this procedure.

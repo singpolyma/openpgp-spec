@@ -1,0 +1,19 @@
+Depends: public-keys
+
+The purpose of a key fingerprint is to uniquely identify some public-key without the presence of the entire packet.  This may be used to allow one packet to informatively reference some public key, or or for two humans to verify that they are referencing the same public key.
+
+The fingerprint material is comprised of the octet 0x99, followed by a two-octet number encoding the number of bytes to follow, followed by the raw octets from the body of the public-key packet.
+
+The fingerprint is calculated by taking the SHA1 hash of the fingerprint material.
+
+== KeyIDs ==
+
+A "key id" of size n is constructed by taking the least significant n octets from the key fingerprint, commonly 4 or 8.
+
+== Security Considerations ==
+
+KeyIDs, and even complete fingerprints, may be identical for multiple keys.  It has been shown in practise that a key with any given KeyID can be generated, and theoretically such an attack may be possible against the current fingerprint system as well.
+
+== Formatting for Display ==
+
+Fingerprints are commonly formatted in base 16 (hexadecimal) for display.  Any unambiguous formatting (such as a different base, English words, or images) is acceptable if it helps the intended purpose.

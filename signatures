@@ -41,7 +41,7 @@ The next octet encodes the type of the subpacket.  If bit 7 is set (type & 0x80)
 0x02 Signature Creation Time, body is a time value.
 0x03 Signature Expiration Time, body is a 4-octet number representing seconds after the Signature Creation Time.  If this subpacket is not present or the value is zero, the signature never expires.
 0x07 Signature Revocability Status, body is one octet: 0x00 for not revocable or 0x01 for revocable.  Revocation signatures on an unrevocable signature are ignored.
-0x10 Signature Issuer, body is an 8-octets from the end of the fingerprint of the key that made this signature (the "key id")
+0x10 Signature Issuer, body is the least significant 8-octets from the fingerprint of the key that made this signature (the "key id")
 0x14 Signature Notation Data, body is:
 	First octet is 0x80 if the value of the note is human-readable, or 0x00 otherwise.
 	The next three octets are 0x00.

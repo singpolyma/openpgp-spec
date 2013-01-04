@@ -1,0 +1,14 @@
+Depends: base
+
+A literal data packet encapsulates arbitrary data so that it may be encrypted, signed, or compressed.
+
+The tag value for a literal data packet is 0x0B.
+
+The first octet of the packet is a UTF-8 encoded character describing the format of the data.  The only valid characters are 'b' (for binary data) and 'u' (for UTF-8 encoded textual data).
+The second octet represents the length of a UTF-8 encoded text string representing a suggested filename for the data, followed by the octets of this string.
+After this, a four-octet time, which is to be interpreted as the last modification of the contents of the message.  Unlike most time values, a 0 in this case indicates no specific time.
+The remainder of the packet is literal data.  For the 'u' format, this data MUST be valid UTF-8 and line-endings MUST be encoded using network-normal line endings (<CR><LF>), which may be converted to native line-endings by decoding software.
+
+== Security Considerations ==
+
+Signatures over literal data messages only sign the literal data, and not the mode, the filename, or the timestamp.  Thus, only the literal data can be trusted if authenticity is required.
